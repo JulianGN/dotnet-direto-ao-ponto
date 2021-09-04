@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,11 +29,14 @@ namespace DevReviews.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // recuperando a connection string salva pelo user-secrets
+            var connectionString = Configuration.GetValue<string>("DevReviewsCn");
             // Transient, Scoped, Singleton são ciclos de vida da injeção de dependência (do mais curto ao mais longo)
             // Transient: compartilha as informações entre as classes relacionadas
             // Scoped: só compartilha na mesma requisição
             // Singleton: compartilha entre diferentes requisições
-            services.AddSingleton<DevReviewsDbContext>();
+            // services.AddSingleton<DevReviewsDbContext>();
+            services.AddDbContext<DevReviewsDbContext>(options => options.UseSqlServer(connectionString)); // assim conectamos o Entity com a conection string
 
             services.AddAutoMapper(typeof(ProductProfile)); // registra tudo que estiver dentro do ProductProfile
 
